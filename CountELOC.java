@@ -10,7 +10,7 @@ public class CountELOC {
     private boolean isInMultipleLinesComment = false;
 
     public int countExecutableLinesOfCode(String text) {
-        System.out.println("Version 6");
+
         int countExecutableLinesOfCode = 0;
         if (text == null) {
             return countExecutableLinesOfCode;
