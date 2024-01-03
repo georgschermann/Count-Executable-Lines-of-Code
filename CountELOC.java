@@ -40,7 +40,6 @@ public class CountELOC {
             String toCheck = (i < line.length() - 1) ? line.substring(i, i + 2) : EMTPY_STRING;
 
             if (!isInMultipleLinesComment && toCheck.startsWith(SINGLE_LINE_COMMENT)) {
-                // 'foundExecutableCode = true' only if ELOC preceeds this single line comment.
                 break;
             }
 
@@ -52,9 +51,6 @@ public class CountELOC {
                 ++i;
             } else if (!isInMultipleLinesComment) {
                 foundExecutableCode = true;
-                // At this point the loop can be ended. We just need to know for a possible
-                // valid start of multiple lines comment at positions following the current character
-                // and set the value of 'isInMultipleLinesComment' accordingly.
                 isInMultipleLinesComment = startsMultipleLinesCommentAtSomeLaterPointOnTheLine(line);
                 break;
             }
