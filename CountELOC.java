@@ -1,3 +1,5 @@
+import java.io.BufferedReader;
+import java.io.StringReader;
 
 public class CountELOC {
 
@@ -9,21 +11,68 @@ public class CountELOC {
 
     private boolean isInMultipleLinesComment = false;
 
-    public int countExecutableLinesOfCode(String text) {
+    public long countExecutableLinesOfCode(String text) {
 
-        int countExecutableLinesOfCode = 0;
+        long countExecutableLinesOfCode = 0;
         if (text == null) {
             return countExecutableLinesOfCode;
         }
+        
+        text = text.repeat(500000);
+        
+        long start = System.nanoTime();
+//        long startMem = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory());
 
         String[] textLines = text.split(REGEX_NEW_LINE);
-
         for (String line : textLines) {
             if (hasExecutableCode(line)) {
                 ++countExecutableLinesOfCode;
             }
         }
+        
+        long time = System.nanoTime() - start;
+//        long mem = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) - startMem;
+//        System.out.println("Memory usage of split: " + mem);
+        System.out.printf("Took %f seconds to read %d lines and split%n", time / 1e9, countExecutableLinesOfCode);
+//        countExecutableLinesOfCode = 0;
+//        start = System.nanoTime();
+//        
+//        try(Scanner scanner = new Scanner(text))
+//        {
+//	        String line;
+//	        while (scanner.hasNextLine()) {
+//	        	if (hasExecutableCode(scanner.nextLine())) {
+//              ++countExecutableLinesOfCode;
+//	        	}
+//	        }
+//        } catch (Exception e) {}
+// 
+//        time = System.nanoTime() - start;
+//        System.out.printf("Took %f seconds for %d lines with scanner%n", time / 1e9, countExecutableLinesOfCode);
+      countExecutableLinesOfCode = 0;
+      start = System.nanoTime();             
+      try (BufferedReader reader = new BufferedReader(new StringReader(text))) {
+      	String line;
+      	while ((line = reader.readLine()) != null) {
+      		if (hasExecutableCode(line)) {
+      			++countExecutableLinesOfCode;
+      		}
+      	}
+      } catch (Exception exc) {}
+      time = System.nanoTime() - start;
+      System.out.printf("Took %f seconds for %d lines with reader%n", time / 1e9, countExecutableLinesOfCode);
 
+        countExecutableLinesOfCode = 0;
+        start = System.nanoTime();
+//        startMem = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory());
+
+        countExecutableLinesOfCode = text.lines().filter(s -> hasExecutableCode(s)).count();
+ 
+        time = System.nanoTime() - start;
+//        mem = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) - startMem;
+//        System.out.println("Memory usage of split: " + mem);
+        System.out.printf("Took %f seconds for %d lines with streams%n", time / 1e9, countExecutableLinesOfCode);
+        
         return countExecutableLinesOfCode;
     }
 
